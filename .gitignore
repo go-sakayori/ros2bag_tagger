@@ -1,30 +1,33 @@
-# ------------- Python byte‑code / build artifacts ------------------
+########################
+#  Python build/cache  #
+########################
 __pycache__/
 *.py[cod]
 *$py.class
-
-# Installer / distribution packages
+*.egg
 *.egg-info/
 dist/
 build/
-*.egg
 *.whl
 
-# Virtual envs
+########################
+#  Virtual environments #
+########################
 .venv/
 env/
 venv/
 
-# ------------- Editor / tooling ------------------------------------
-# VS Code
+########################
+#  Editor/IDE metadata #
+########################
 .vscode/
-# PyCharm / IDEA
 .idea/
-# Sublime
 *.sublime-workspace
 *.sublime-project
 
-# ------------- Test & static analysis ------------------------------
+########################
+#  Test / tooling      #
+########################
 .coverage
 htmlcov/
 pytest_cache/
@@ -32,14 +35,23 @@ pytest_cache/
 .tox/
 .nox/
 
-# ------------- OS / miscellaneous ----------------------------------
-.DS_Store
-Thumbs.db
+########################
+#  Node / frontend     #
+########################
+node_modules/
+.cache/
+.cache/**
+.prettier-caches/
 
-# ------------- Project‑specific ------------------------------------
-# Large data logs (rosbag, MCAP, etc.) → 別の場所に保管推奨
+########################
+#  Large data logs     #
+########################
 *.db3
 *.mcap
 logs/
 
-# ------------- End of file -----------------------------------------
+########################
+#  OS cruft            #
+########################
+.DS_Store
+Thumbs.db

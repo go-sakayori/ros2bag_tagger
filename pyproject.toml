@@ -1,0 +1,23 @@
+[project]
+name = "ros2bag_tagger"
+version = "0.2.0"
+description = "Tagging utility for MCAP log files (ROS-agnostic)."
+license = { text = "Apache-2.0" }
+requires-python = ">=3.9"
+
+# 依存を mcap ライブラリのみに
+dependencies = [
+  "mcap>=1.2.2"            # PyPI にある純 Python 実装
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "ruff>=0.4",
+  "black>=24.3",
+  "mypy>=1.8",
+  "pre-commit>=3.7",
+]
+
+[project.scripts]
+ros2bag-tagger = "ros2bag_tagger.cli:main"

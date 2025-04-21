@@ -1,0 +1,45 @@
+# ------------- Python byte‑code / build artifacts ------------------
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Installer / distribution packages
+*.egg-info/
+dist/
+build/
+*.egg
+*.whl
+
+# Virtual envs
+.venv/
+env/
+venv/
+
+# ------------- Editor / tooling ------------------------------------
+# VS Code
+.vscode/
+# PyCharm / IDEA
+.idea/
+# Sublime
+*.sublime-workspace
+*.sublime-project
+
+# ------------- Test & static analysis ------------------------------
+.coverage
+htmlcov/
+pytest_cache/
+.mypy_cache/
+.tox/
+.nox/
+
+# ------------- OS / miscellaneous ----------------------------------
+.DS_Store
+Thumbs.db
+
+# ------------- Project‑specific ------------------------------------
+# Large data logs (rosbag, MCAP, etc.) → 別の場所に保管推奨
+*.db3
+*.mcap
+logs/
+
+# ------------- End of file -----------------------------------------

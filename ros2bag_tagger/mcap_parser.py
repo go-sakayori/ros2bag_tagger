@@ -1,8 +1,7 @@
-"""
-mcap_parser.py – Parse the first 60 seconds of an MCAP file
-and infer DatasetTags without any ROS dependency.
+"""MCAP parser module.
 
-Relies solely on the PyPI package `mcap`.
+Parse MCAP file and infer without any ROS runtime dependency.
+The implementation relies solely on the PyPIpackage mcap.
 """
 
 from __future__ import annotations
@@ -20,19 +19,24 @@ class McapTaggerError(RuntimeError):
 
 
 class McapParser:
+    """Infer :class:DatasetTags from a slice of an MCAP recording."""
+
     def __init__(self, mcap_path: str | Path) -> None:
+        """Instantiate a parser for *mcap_path*.
+
+        Parameters
+        ----------
+        mcap_path
+        """
         self.path = Path(mcap_path).expanduser().resolve()
         if not self.path.exists():
             raise McapTaggerError(f"File not found: {self.path}")
 
     def infer_tags(self) -> DatasetTags:
         """
-        Very naive tag inference:
+        Very naive tag inference.
 
-        - If any "/radar/<id>/object" topic exists  -> traffic_volume = heavy
-        - If frame_id contains "night"              -> time_of_day = night
-        - If schema name contains "Weather"         -> weather = rainy
-        *Replace this logic with your own rules.*
+        *Replace this logic.*
         """
         ds = DatasetTags()
 
@@ -59,9 +63,7 @@ class McapParser:
 
         return ds
 
-    def _apply_rules(
-        self, msg: Message, ds: DatasetTags, schemas: dict[int, Schema]
-    ) -> None:
+    def _apply_rules(self, msg: Message, ds: DatasetTags, schemas: dict[int, Schema]) -> None:
         """Inspect each message and mutate DatasetTags in‑place."""
         topic = msg.channel.topic
 

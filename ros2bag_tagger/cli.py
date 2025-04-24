@@ -101,22 +101,16 @@ def _build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
 
     # Convert
-    p_convert = sub.add_parser(
-        "convert", help="Convert a single ROS2 bag to a tag-JSON file"
-    )
+    p_convert = sub.add_parser("convert", help="Convert a single ROS2 bag to a tag-JSON file")
     p_convert.add_argument("bag", help="Path to a *.mcap ros bag.")
-    p_convert.add_argument(
-        "-o", "--output", help="Output file path (default: <bag>_tags.json)."
-    )
+    p_convert.add_argument("-o", "--output", help="Output file path (default: <bag>_tags.json).")
     p_convert.add_argument(
         "--dry_run", action="store_true", help="Print JSON to stdout instead of saving."
     )
     p_convert.set_defaults(func=_cmd_convert)
 
     # Batch
-    p_batch = sub.add_parser(
-        "batch", help="Recursively convert multiple ros bags at once."
-    )
+    p_batch = sub.add_parser("batch", help="Recursively convert multiple ros bags at once.")
     p_batch.add_argument(
         "-i",
         "--input",
@@ -133,9 +127,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
     # Template
     p_template = sub.add_parser("template", help="Output an empty tag‑JSON template.")
-    p_template.add_argument(
-        "-o", "--output", help="Write template to file instead of stdout."
-    )
+    p_template.add_argument("-o", "--output", help="Write template to file instead of stdout.")
     p_template.set_defaults(func=_cmd_template)
 
     return parser

@@ -39,8 +39,7 @@ class TagTemplate:
         """
         if category not in cls._CATEGORIES:
             raise KeyError(
-                f"Unknown category '{category}'. "
-                f"Known categories: {', '.join(cls._CATEGORIES)}"
+                f"Unknown category '{category}'. " f"Known categories: {', '.join(cls._CATEGORIES)}"
             )
 
     @classmethod

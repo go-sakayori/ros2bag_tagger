@@ -1,11 +1,10 @@
 [project]
 name = "ros2bag_tagger"
-version = "0.2.0"
+version = "0.1.0"
 description = "Tagging utility for MCAP log files (ROS-agnostic)."
 license = { text = "Apache-2.0" }
 requires-python = ">=3.9"
 
-# 依存を mcap ライブラリのみに
 dependencies = [
   "mcap>=1.2.2",
   "mcap-ros2-support>=0.5.5",
@@ -22,3 +21,7 @@ dev = [
 
 [project.scripts]
 ros2bag-tagger = "ros2bag_tagger.cli:main"
+mcap-augment = "mcap_augment.cli:main"
+
+[tool.setuptools]
+  packages = ["ros2bag_tagger", "mcap_augment"]

@@ -57,7 +57,7 @@ def _cmd_convert(args: argparse.Namespace) -> None:
         out_path = (
             Path(args.output).expanduser().resolve()
             if args.output is not None
-            else Path(args.bag).with_suffix("_tags.json")
+            else Path(args.bag).with_suffix("").with_name(Path(args.bag).stem + "_tags.json")
         )
         _save_json(tags, out_path)
 

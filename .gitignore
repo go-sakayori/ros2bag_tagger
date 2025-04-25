@@ -1,0 +1,57 @@
+########################
+#  Python build/cache  #
+########################
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+########################
+#  Virtual environments #
+########################
+.venv/
+env/
+venv/
+
+########################
+#  Editor/IDE metadata #
+########################
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+########################
+#  Test / tooling      #
+########################
+.coverage
+htmlcov/
+pytest_cache/
+.mypy_cache/
+.tox/
+.nox/
+
+########################
+#  Node / frontend     #
+########################
+node_modules/
+.cache/
+.cache/**
+.prettier-caches/
+
+########################
+#  Large data logs     #
+########################
+*.db3
+*.mcap
+logs/
+
+########################
+#  OS cruft            #
+########################
+.DS_Store
+Thumbs.db

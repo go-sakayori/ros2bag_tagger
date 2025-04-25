@@ -6,6 +6,12 @@ from .tag_template import TagTemplate
 class DatasetTags:
     def __init__(self) -> None:
         self._tags: dict[str, list[str]] = TagTemplate.empty()
+        self._tags["dynamic_object"] = {
+            "vehicle": [],
+            "two_wheeler": [],
+            "pedestrian": [],
+            "unknown": [],
+        }
 
     def set(self, category: str, values: Iterable[str]) -> "DatasetTags":
         TagTemplate.validate(category)
@@ -18,6 +24,12 @@ class DatasetTags:
         current.update(values)
         self._tags[category] = sorted(current)
         return self
+
+    def add_dynamic_object(self, group: str, *values: str) -> None:
+        """Add items to dynamic_object[group]."""
+        current = set(self._tags["dynamic_object"][group])
+        current.update(values)
+        self._tags["dynamic_object"][group] = sorted(current)
 
     def remove(self, category: str, *values: str) -> "DatasetTags":
         TagTemplate.validate(category)

@@ -8,8 +8,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from mcap.reader import make_reader
-from mcap.records import Message, Schema
+from mcap_ros2.reader import read_ros2_messages
 
 from .dataset_tags import DatasetTags
 
@@ -39,43 +38,53 @@ class McapParser:
         *Replace this logic.*
         """
         ds = DatasetTags()
+        start_time: float | None = None
 
-        with self.path.open("rb") as fh:
-            reader = make_reader(fh)
-            start_time: float | None = None
+        for view in read_ros2_messages(
+            str(self.path), topics=["/perception/object_recognition/objects"]
+        ):
+            # record first timestamp
+            if start_time is None:
+                start_time = view.log_time_ns
 
-            for msg in reader.iter_messages():
-                msg_time_sec = msg.log_time / 1e9  # nanosec -> sec
-
-                # record first timestamp
-                if start_time is None:
-                    start_time = msg_time_sec
-
-                # stop after 60 sec window
-                if msg_time_sec - start_time > self.SLICE_SEC:
-                    break
-
-                self._apply_rules(msg, ds, reader.schemas)
-
-        # fallback defaults (optional)
-        if not ds.to_dict()["weather"]:
-            ds.set("weather", ["unknown"])
+            self._apply_rules(view.channel.topic, view.ros_msg, ds)
 
         return ds
 
-    def _apply_rules(self, msg: Message, ds: DatasetTags, schemas: dict[int, Schema]) -> None:
+    def _apply_rules(self, topic: str, ros_msg, ds: DatasetTags) -> None:
         """Inspect each message and mutate DatasetTags in‑place."""
-        topic = msg.channel.topic
 
-        # simplistic traffic volume heuristic
-        if "/object" in topic:
-            ds.set("traffic_volume", ["heavy_traffic"])
+        if topic == "/perception/object_recognition/objects":
+            self._update_dynamic_object_tags(ros_msg, ds)
 
-        # time of day from frame_id (dummy rule)
-        if b"night" in msg.data:
-            ds.set("time_of_day", ["night"])
+    @staticmethod
+    def _update_dynamic_object_tags(ros_msg, ds: DatasetTags) -> None:
+        """Add tags to dynamic_object."""
+        for obj in ros_msg.objects:
+            label = obj.classification[0].label
 
-        # schema‑based weather hint
-        schema_name = schemas[msg.channel.schema_id].name.lower()
-        if "weather" in schema_name:
-            ds.set("weather", ["rainy"])
+            match label:
+                case 0:
+                    ds.add_dynamic_object("unknown", "unknown")
+                case 1:
+                    ds.add_dynamic_object("vehicle", "car")
+                case 2:
+                    ds.add_dynamic_object("vehicle", "truck")
+                case 3:
+                    ds.add_dynamic_object("vehicle", "bus")
+                case 4:
+                    ds.add_dynamic_object("vehicle", "trailer")
+                case 5:
+                    ds.add_dynamic_object("two_wheeler", "motorcycle")
+                case 6:
+                    ds.add_dynamic_object("two_wheeler", "bicycle")
+                case 7:
+                    ds.add_dynamic_object("pedestrian", "pedestrian")
+                case 8:
+                    ds.add_dynamic_object("pedestrian", "animal")
+                case 9:
+                    ds.add_dynamic_object("unknown", "hazard")
+                case 10:
+                    ds.add_dynamic_object("unknown", "over_drivable")
+                case 11:
+                    ds.add_dynamic_object("unknown", "under_drivable")

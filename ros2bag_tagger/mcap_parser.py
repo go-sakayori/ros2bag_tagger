@@ -28,6 +28,7 @@ class McapParser:
         mcap_path
         """
         self.path = Path(mcap_path).expanduser().resolve()
+        self.turn_signal = 1
         if not self.path.exists():
             raise McapTaggerError(f"File not found: {self.path}")
 
@@ -41,7 +42,12 @@ class McapParser:
         start_time: float | None = None
 
         for view in read_ros2_messages(
-            str(self.path), topics=["/perception/object_recognition/objects"]
+            str(self.path),
+            topics=[
+                "/perception/object_recognition/objects",
+                "/localization/kinematic_state",
+                "/pacmod/turn_rpt",
+            ],
         ):
             # record first timestamp
             if start_time is None:
@@ -52,10 +58,14 @@ class McapParser:
         return ds
 
     def _apply_rules(self, topic: str, ros_msg, ds: DatasetTags) -> None:
-        """Inspect each message and mutate DatasetTags in‑place."""
+        """Inspect each message and mutate DatasetTags in-place."""
 
         if topic == "/perception/object_recognition/objects":
             self._update_dynamic_object_tags(ros_msg, ds)
+        if topic == "/localization/kinematic_state":
+            self._update_road_shape(ros_msg, ds)
+        if topic == "/pacmod/turn_rpt":
+            self.turn_signal = 1
 
     @staticmethod
     def _update_dynamic_object_tags(ros_msg, ds: DatasetTags) -> None:

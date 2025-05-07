@@ -1,0 +1,4 @@
+[submodule "third_party/lanelet2_python_api_for_autoware"]
+	path = third_party/lanelet2_python_api_for_autoware
+	url = https://github.com/tier4/lanelet2_python_api_for_autoware.git
+	branch = rosless_lanelet2

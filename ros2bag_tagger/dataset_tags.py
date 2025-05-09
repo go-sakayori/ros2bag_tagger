@@ -12,6 +12,17 @@ class DatasetTags:
             "pedestrian": [],
             "unknown": [],
         }
+        self._tags["ego_vehicle_movement"] = {
+            "lane keep": [],
+            "left turn": [],
+            "right turn": [],
+            "lane change": [],
+            "obstacle avoidance": [],
+            "stopped": [],
+            "parked": [],
+            "pull out": [],
+            "pull over": [],
+        }
 
     def set(self, category: str, values: Iterable[str]) -> "DatasetTags":
         TagTemplate.validate(category)

@@ -1,24 +1,28 @@
+[build-system]
+requires = ["setuptools>=59", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "ros2bag_tagger"
-version = "0.2.0"
-description = "Tagging utility for MCAP log files (ROS-agnostic)."
-license = { text = "Apache-2.0" }
+version = "0.1.0"
+description = "Utility to annotate ROS 2 bag / MCAP files with JSON tags."
+readme = "README.md"
+license = "Apache-2.0"
+authors = [{ name = "Go Sakayori", email = "gsakayori@gmail.com" }]
 requires-python = ">=3.9"
-
-# 依存を mcap ライブラリのみに
 dependencies = [
-  "mcap>=1.2.2",
-  "mcap-ros2-support>=0.5.5",
+    "typer[all]>=0.12.3",
+    "pydantic>=2.7,<3",
+    "rich>=13.7",
+    "mcap>=1.2.2",
+    "mcap-ros2-support>=0.5.5",
 ]
-
-[project.optional-dependencies]
-dev = [
-  "pytest>=8.0",
-  "ruff>=0.4",
-  "black>=24.3",
-  "mypy>=1.8",
-  "pre-commit>=3.7",
-]
-
+[project.urls]
+Homepage = "https://github.com/go-sakayori/ros2bag_tagger"
+Issues    = "https://github.com/go-sakayori/ros2bag_tagger/issues"
 [project.scripts]
-ros2bag-tagger = "ros2bag_tagger.cli:main"
+ros2bag-tagger = "ros2bag_tagger.cli:app"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages    = ["ros2bag_tagger"]

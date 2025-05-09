@@ -4,10 +4,13 @@ import typer
 
 from ..tag_manager import TagManager
 
-app = typer.Typer(help="Annotate many bags under a directory")
+app = typer.Typer(
+    help="Annotate many bags under a directory",
+    invoke_without_command=True,
+)
 
 
-@app.command("annotate-dir")
+@app.callback()
 def annotate_directory(
     src_dir: Path = typer.Argument(
         ..., exists=True, file_okay=False, readable=True, help="Directory that contains .mcap files"
@@ -44,4 +47,4 @@ def annotate_directory(
     with ThreadPoolExecutor(max_workers=workers) as pool:
         pool.map(_process, targets)
 
-    typer.secho("🎉  Batch annotation finished!", fg=typer.colors.GREEN)
+    typer.secho("Batch annotation finished!", fg=typer.colors.GREEN)

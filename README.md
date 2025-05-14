@@ -5,7 +5,12 @@
 Clone the repository:
 
 ```sh
-git clone --recursive git@github.com:go-sakayori/ros2bag_tagger.git
+# 1. Clone (with sub-modules) and enter:
+git clone --recursive https://github.com/go-sakayori/ros2bag_tagger.git
+cd ros2bag_tagger
+
+# 2. Install into an existing Python ≥3.9 environment
+pip install -e .
 ```
 
 ## How to use

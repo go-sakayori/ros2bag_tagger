@@ -13,6 +13,8 @@ cd ros2bag_tagger
 pip install -e .
 ```
 
+To use the mcap augment function, please install the third party sources, by following documents in each repository.
+
 ## How to use
 
 | Verb                                      | What it does                                            | Key options                                               |

@@ -1,15 +1,6 @@
-"""Command-line interface for mcap_augment.
-
-Sub-commands
-------------
-
-"""
-
 import argparse
 import sys
 from pathlib import Path
-
-from ros2bag_tagger.mcap_parser import McapParser
 
 
 def _cmd_map_marker_array(args: argparse.Namespace) -> None:

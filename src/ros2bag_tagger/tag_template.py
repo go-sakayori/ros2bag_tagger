@@ -9,26 +9,54 @@ class TagTemplate:
     # ------------------------------------------------------------------ #
     # Update this tuple whenever the spec evolves
     # ------------------------------------------------------------------ #
-    _CATEGORIES: Tuple[str, ...] = (
-        "dynamic_object",
-        "ego_vehicle_movement",
-        "location",
-        "road_shape",
-        "time_of_day",
-    )
+    _LABELS: Dict[str, Tuple[str, ...]] = {
+        "dynamic_object": (
+            "vehicle",
+            "two_wheeler",
+            "pedestrian",
+            "unknown",
+        ),
+        "ego_vehicle_movement": (
+            "lane keep",
+            "left turn",
+            "right turn",
+            "lane change",
+            "obstacle avoidance",
+            "stopped",
+            "parked",
+            "pull out",
+            "pull over",
+        ),
+        # No predefined sub-keys yet
+        "location": (),
+        "road_shape": (),
+        "time_of_day": (),
+    }
 
     # ------------------------------------------------------------------ #
     # Public helpers
     # ------------------------------------------------------------------ #
 
     @classmethod
-    def empty(cls) -> Dict[str, List[str]]:
-        """
-        Return a fresh dict in which every category key is present and
-        mapped to an empty list. This ensures downstream code never needs
-        to check for missing keys.
-        """
-        return {cat: [] for cat in cls._CATEGORIES}
+    def category(cls) -> Tuple[str, ...]:
+        """Return all categories name as an immutable tuple."""
+        return tuple(cls._LABELS.keys())
+
+    @classmethod
+    def subcategory(cls, category: str) -> Tuple[str, ...]:
+        """Return the sub-keys defined for *category* (may be empty)."""
+        cls._assert_category(category)
+        return cls._LABELS[category]
+
+    @classmethod
+    def empty(cls) -> Dict[str, Dict[str, List[str]]]:
+        """Produce a fresh, fully initialised tag container."""
+        return {cat: {sub: [] for sub in cls._LABELS[cat]} for cat in cls.category()}
+
+    @classmethod
+    def _assert_category(cls, category: str) -> None:
+        if category not in cls._SPEC:
+            raise KeyError(f"Unknown category: {category}")
 
     @classmethod
     def validate(cls, category: str) -> None:
@@ -41,8 +69,3 @@ class TagTemplate:
             raise KeyError(
                 f"Unknown category '{category}'. " f"Known categories: {', '.join(cls._CATEGORIES)}"
             )
-
-    @classmethod
-    def categories(cls) -> Tuple[str, ...]:
-        """Return the tuple of category names (read‑only)."""
-        return cls._CATEGORIES

@@ -8,19 +8,19 @@ from ..tag_template import TagTemplate
 app = typer.Typer(help="Create and manage tag templates")
 
 
-@app.command("new")
+@app.command("check")
 def new_template(
-    dst: Path = typer.Argument(..., writable=True, help="Output file name (e.g. template.json)"),
-    preset: str = typer.Option(
-        "minimal", "--preset", "-p", help="Preset name: minimal | full | custom-01 …"
-    ),
+    output: Path = typer.Option(default=None, help="Output file name (e.g. template.json)"),
 ) -> None:
     """
     Create a new tag template JSON.
     """
-    template = TagTemplate.make_preset(preset)
-    dst.write_text(json.dumps(template, indent=2, ensure_ascii=False))
-    typer.echo(f"Template saved to {dst}")
+    template = TagTemplate.empty()
+    if output is None:
+        print(f"{json.dumps(template, indent=2, ensure_ascii=False)}")
+        return
+    output.write_text(json.dumps(template, indent=2, ensure_ascii=False))
+    typer.echo(f"Template saved to {output}")
 
 
 @app.command("validate")

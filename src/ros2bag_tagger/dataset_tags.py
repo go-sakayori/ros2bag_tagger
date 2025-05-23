@@ -6,23 +6,6 @@ from .tag_template import TagTemplate
 class DatasetTags:
     def __init__(self) -> None:
         self._tags: dict[str, list[str]] = TagTemplate.empty()
-        self._tags["dynamic_object"] = {
-            "vehicle": [],
-            "two_wheeler": [],
-            "pedestrian": [],
-            "unknown": [],
-        }
-        self._tags["ego_vehicle_movement"] = {
-            "lane keep": [],
-            "left turn": [],
-            "right turn": [],
-            "lane change": [],
-            "obstacle avoidance": [],
-            "stopped": [],
-            "parked": [],
-            "pull out": [],
-            "pull over": [],
-        }
 
     def set(self, category: str, values: Iterable[str]) -> "DatasetTags":
         TagTemplate.validate(category)

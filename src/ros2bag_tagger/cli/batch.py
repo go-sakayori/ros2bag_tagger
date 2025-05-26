@@ -2,6 +2,7 @@ from pathlib import Path
 
 import typer
 
+from ..mcap_parser import McapParser
 from ..tag_manager import TagManager
 
 app = typer.Typer(
@@ -40,7 +41,8 @@ def annotate_directory(
 
     def _process(path: Path) -> None:
         tag_file = path.with_suffix(".tags.json")
-        tags = tagger.generate_tags(path)
+        parser = McapParser(path)
+        tags = parser.infer_tags()
         tag_file.write_text(tags.to_json_str(indent=2, ensure_ascii=False), encoding="utf-8")
         typer.echo(f"  • {path.name} → {tag_file.name}")
 

@@ -41,7 +41,7 @@ def annotate_directory(
     def _process(path: Path) -> None:
         tag_file = path.with_suffix(".tags.json")
         tags = tagger.generate_tags(path)
-        tag_file.write_text(tags.model_dump_json(indent=2))  # or .json(indent=2) for pydantic v1
+        tag_file.write_text(tags.to_json_str(indent=2, ensure_ascii=False), encoding="utf-8")
         typer.echo(f"  • {path.name} → {tag_file.name}")
 
     with ThreadPoolExecutor(max_workers=workers) as pool:

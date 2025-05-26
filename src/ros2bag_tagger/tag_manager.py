@@ -9,8 +9,9 @@ from .dataset_tags import DatasetTags
 
 
 class TagManager:
-    def __init__(self) -> None:
+    def __init__(self, template: dict | None = None) -> None:
         self._datasets: Dict[str, DatasetTags] = {}
+        self._template = deepcopy(template) if template else None
 
     @classmethod
     def from_template(cls, path: str | Path) -> "TagManager":
@@ -26,6 +27,17 @@ class TagManager:
         ds = mgr.new_dataset("template")
         ds.load_from_dict(deepcopy(mapping))
         return mgr
+
+    def generate_tags(self, bag_path: str | Path) -> DatasetTags:
+        name = Path(bag_path).stem
+        ds = self.new_dataset(name)
+
+        if self._template:
+            ds._tags = deepcopy(self._template)
+        else:
+            ds._tags = deepcopy(DatasetTags()._tags)
+
+        return ds
 
     def new_dataset(self, name: str) -> DatasetTags:
         if name in self._datasets:

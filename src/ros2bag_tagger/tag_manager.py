@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Dict
 
 from .dataset_tags import DatasetTags
+from .utils.bag_info import get_bag_times
 
 
 class TagManager:
@@ -29,8 +30,14 @@ class TagManager:
         return mgr
 
     def generate_tags(self, bag_path: str | Path) -> DatasetTags:
-        name = Path(bag_path).stem
-        ds = self.new_dataset(name)
+        path = Path(bag_path)
+        ds = self.new_dataset(path.stem)
+
+        start, end = get_bag_times(path)
+        ds.meta = {
+            "start_time": start,
+            "end_time": end,
+        }
 
         if self._template:
             ds._tags = deepcopy(self._template)

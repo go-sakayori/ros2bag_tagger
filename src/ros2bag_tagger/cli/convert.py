@@ -3,6 +3,7 @@ from pathlib import Path
 import typer
 
 from ..mcap_parser import McapParser
+from ..utils.bag_info import get_bag_times
 
 app = typer.Typer(
     help="Convert mcap format rosbag files to tagged JSON",
@@ -18,6 +19,11 @@ def convert(
     """Convert a single bag to JSON with tag information."""
     parser = McapParser(bag)
     tags = parser.infer_tags()
+
+    start, end = get_bag_times(bag)
+    tags.meta["start_time"] = start
+    tags.meta["end_time"] = end
+
     out_path = output or bag.with_suffix(".json")
     out_path.write_text(tags.to_json_str(indent=2, ensure_ascii=False), encoding="utf-8")
     typer.echo(f"Wrote {out_path}")

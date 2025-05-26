@@ -3,7 +3,7 @@ from pathlib import Path
 import typer
 
 from ..mcap_parser import McapParser
-from ..tag_manager import TagManager
+from ..utils.bag_info import get_bag_times
 
 app = typer.Typer(
     help="Annotate many bags under a directory",
@@ -26,7 +26,6 @@ def annotate_directory(
     Apply tags (defined by *template*) to every bag inside *src_dir*.
     Results are stored next to each bag as `<bag>.tags.json`.
     """
-    tagger = TagManager.from_template(template) if template is not None else TagManager()
 
     pattern = "**/*.mcap" if recursive else "*.mcap"
     targets = list(src_dir.glob(pattern))
@@ -40,9 +39,12 @@ def annotate_directory(
     from concurrent.futures import ThreadPoolExecutor
 
     def _process(path: Path) -> None:
-        tag_file = path.with_suffix(".tags.json")
+        tag_file = path.with_suffix(".json")
         parser = McapParser(path)
         tags = parser.infer_tags()
+        start, end = get_bag_times(path)
+        tags.meta["start_time"] = start
+        tags.meta["end_time"] = end
         tag_file.write_text(tags.to_json_str(indent=2, ensure_ascii=False), encoding="utf-8")
         typer.echo(f"  • {path.name} → {tag_file.name}")
 

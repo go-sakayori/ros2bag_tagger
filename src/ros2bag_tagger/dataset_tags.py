@@ -6,6 +6,7 @@ from .tag_template import TagTemplate
 class DatasetTags:
     def __init__(self) -> None:
         self._tags: dict[str, list[str]] = TagTemplate.empty()
+        self.meta: dict[str, object] = {}
 
     def set(self, category: str, values: Iterable[str]) -> "DatasetTags":
         TagTemplate.validate(category)
@@ -36,8 +37,11 @@ class DatasetTags:
         """Return a shallow copy of the internal dict."""
         return {k: list(v) for k, v in self._tags.items()}
 
-    def to_json_str(self, *, ensure_ascii: bool = False, indent: int = 2) -> str:
+    def to_json_str(self, **kwargs) -> str:
         """Serialize tags to a JSON string."""
+        import copy
         import json
 
-        return json.dumps(self._tags, ensure_ascii=ensure_ascii, indent=indent)
+        payload = {"meta": copy.deepcopy(self.meta), **copy.deepcopy(self._tags)}
+
+        return json.dumps(payload, **kwargs)

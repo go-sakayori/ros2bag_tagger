@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+from copy import deepcopy
 from pathlib import Path
 from typing import Dict
 
@@ -9,6 +11,21 @@ from .dataset_tags import DatasetTags
 class TagManager:
     def __init__(self) -> None:
         self._datasets: Dict[str, DatasetTags] = {}
+
+    @classmethod
+    def from_template(cls, path: str | Path) -> "TagManager":
+        """Load a template JSON and return a pre-seeded TagManager."""
+        with Path(path).expanduser().open(encoding="utf-8") as fh:
+            data = json.load(fh)
+
+        return cls._from_dict(data)
+
+    @classmethod
+    def _from_dict(cls, mapping: dict) -> "TagManager":
+        mgr = cls()
+        ds = mgr.new_dataset("template")
+        ds.load_from_dict(deepcopy(mapping))
+        return mgr
 
     def new_dataset(self, name: str) -> DatasetTags:
         if name in self._datasets:

@@ -27,11 +27,7 @@ def annotate_directory(
     src_dir: Path = typer.Argument(
         ..., exists=True, file_okay=False, readable=True, help="Directory that contains .mcap files"
     ),
-    template: Path = typer.Option(
-        None, "--template", "-t", exists=True, readable=True, help="Tag template JSON"
-    ),
     recursive: bool = typer.Option(False, "--recursive", "-r", help="Scan sub-directories too"),
-    workers: int = typer.Option(4, "--jobs", "-j", help="Parallelism"),
 ) -> None:
     """
     Apply tags (defined by *template*) to every bag inside *src_dir*.

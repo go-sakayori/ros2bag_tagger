@@ -48,7 +48,8 @@ class McapParser:
         with self.path.open("rb") as fh:
             rdr = make_reader(fh, decoder_factories=[factory])
             for _, channel, _, ros_msg in rdr.iter_decoded_messages(
-                topics=["/perception/object_recognition/objects", "/localization/kinematic_state"]
+                topics=["/perception/object_recognition/objects", "/localization/kinematic_state"],
+                log_time_order=False,
             ):
                 self._apply_rules(channel.topic, ros_msg, ds)
 

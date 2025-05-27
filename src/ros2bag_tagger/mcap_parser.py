@@ -8,7 +8,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from mcap_ros2.reader import read_ros2_messages
+from mcap.reader import make_reader
+from mcap_ros2.decoder import DecoderFactory
 
 from .dataset_tags import DatasetTags
 
@@ -20,7 +21,7 @@ class McapTaggerError(RuntimeError):
 class McapParser:
     """Infer :class:DatasetTags from a slice of an MCAP recording."""
 
-    def __init__(self, mcap_path: str | Path) -> None:
+    def __init__(self, mcap_path: str | Path, template: dict | None = None) -> None:
         """Instantiate a parser for *mcap_path*.
 
         Parameters
@@ -28,6 +29,7 @@ class McapParser:
         mcap_path
         """
         self.path = Path(mcap_path).expanduser().resolve()
+        self.template = template
         if not self.path.exists():
             raise McapTaggerError(f"File not found: {self.path}")
 
@@ -38,16 +40,16 @@ class McapParser:
         *Replace this logic.*
         """
         ds = DatasetTags()
-        start_time: float | None = None
+        if self.template:
+            ds._tags.update(self.template)
+        factory = DecoderFactory()
 
-        for view in read_ros2_messages(
-            str(self.path), topics=["/perception/object_recognition/objects"]
-        ):
-            # record first timestamp
-            if start_time is None:
-                start_time = view.log_time_ns
-
-            self._apply_rules(view.channel.topic, view.ros_msg, ds)
+        with self.path.open("rb") as fh:
+            rdr = make_reader(fh, decoder_factories=[factory])
+            for _, channel, _, ros_msg in rdr.iter_decoded_messages(
+                topics=["/perception/object_recognition/objects"]
+            ):
+                self._apply_rules(channel.topic, ros_msg, ds)
 
         return ds
 

@@ -11,6 +11,17 @@ app = typer.Typer(
 )
 
 
+def _process(path: Path) -> None:
+    tag_file = path.with_suffix(".json")
+    parser = McapParser(path)
+    tags = parser.infer_tags()
+    start, end = get_bag_times(path)
+    tags.time["start_time"] = start
+    tags.time["end_time"] = end
+    tag_file.write_text(tags.to_json_str(indent=2, ensure_ascii=False), encoding="utf-8")
+    typer.echo(f"  • {path.name} → {tag_file.name}")
+
+
 @app.callback()
 def annotate_directory(
     src_dir: Path = typer.Argument(
@@ -36,19 +47,7 @@ def annotate_directory(
 
     typer.echo(f"Tagging {len(targets)} bag(s)…")
 
-    from concurrent.futures import ThreadPoolExecutor
-
-    def _process(path: Path) -> None:
-        tag_file = path.with_suffix(".json")
-        parser = McapParser(path)
-        tags = parser.infer_tags()
-        start, end = get_bag_times(path)
-        tags.meta["start_time"] = start
-        tags.meta["end_time"] = end
-        tag_file.write_text(tags.to_json_str(indent=2, ensure_ascii=False), encoding="utf-8")
-        typer.echo(f"  • {path.name} → {tag_file.name}")
-
-    with ThreadPoolExecutor(max_workers=workers) as pool:
-        pool.map(_process, targets)
+    for bag in targets:
+        _process(bag)
 
     typer.secho("Batch annotation finished!", fg=typer.colors.GREEN)

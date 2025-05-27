@@ -30,6 +30,7 @@ class McapParser:
         """
         self.path = Path(mcap_path).expanduser().resolve()
         self.template = template
+        self.velocity = [None, None]
         if not self.path.exists():
             raise McapTaggerError(f"File not found: {self.path}")
 
@@ -47,17 +48,21 @@ class McapParser:
         with self.path.open("rb") as fh:
             rdr = make_reader(fh, decoder_factories=[factory])
             for _, channel, _, ros_msg in rdr.iter_decoded_messages(
-                topics=["/perception/object_recognition/objects"]
+                topics=["/perception/object_recognition/objects", "/localization/kinematic_state"]
             ):
                 self._apply_rules(channel.topic, ros_msg, ds)
 
+        ds.add("velocity", ",".join(map(str, self.velocity)))
         return ds
 
     def _apply_rules(self, topic: str, ros_msg, ds: DatasetTags) -> None:
-        """Inspect each message and mutate DatasetTags in‑place."""
+        """Inspect each message and mutate DatasetTags in-place."""
 
         if topic == "/perception/object_recognition/objects":
             self._update_dynamic_object_tags(ros_msg, ds)
+
+        if topic == "/localization/kinematic_state":
+            self._update_velocity(ros_msg, self.velocity)
 
     @staticmethod
     def _update_dynamic_object_tags(ros_msg, ds: DatasetTags) -> None:
@@ -90,3 +95,12 @@ class McapParser:
                     ds.add_dynamic_object("unknown", "over_drivable")
                 case 11:
                     ds.add_dynamic_object("unknown", "under_drivable")
+
+    @staticmethod
+    def _update_velocity(ros_msg, velocity):
+        current_vel = ros_msg.twist.twist.linear.x
+
+        if velocity[0] is None or current_vel < velocity[0]:
+            velocity[0] = current_vel
+        if velocity[1] is None or current_vel > velocity[1]:
+            velocity[1] = current_vel

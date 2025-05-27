@@ -6,7 +6,7 @@ from .tag_template import TagTemplate
 class DatasetTags:
     def __init__(self) -> None:
         self._tags: dict[str, list[str]] = TagTemplate.empty()
-        self.meta: dict[str, object] = {}
+        self.time: dict[str, object] = {}
 
     def set(self, category: str, values: Iterable[str]) -> "DatasetTags":
         TagTemplate.validate(category)
@@ -42,6 +42,6 @@ class DatasetTags:
         import copy
         import json
 
-        payload = {"meta": copy.deepcopy(self.meta), **copy.deepcopy(self._tags)}
+        payload = {"time": copy.deepcopy(self.time), **copy.deepcopy(self._tags)}
 
         return json.dumps(payload, **kwargs)

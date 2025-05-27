@@ -21,8 +21,8 @@ def convert(
     tags = parser.infer_tags()
 
     start, end = get_bag_times(bag)
-    tags.meta["start_time"] = start
-    tags.meta["end_time"] = end
+    tags.time["start_time"] = start
+    tags.time["end_time"] = end
 
     out_path = output or bag.with_suffix(".json")
     out_path.write_text(tags.to_json_str(indent=2, ensure_ascii=False), encoding="utf-8")

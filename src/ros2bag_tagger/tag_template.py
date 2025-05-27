@@ -10,6 +10,7 @@ class TagTemplate:
     # Update this tuple whenever the spec evolves
     # ------------------------------------------------------------------ #
     _LABELS: Dict[str, Tuple[str, ...]] = {
+        "velocity": (),
         "dynamic_object": (
             "vehicle",
             "two_wheeler",
@@ -65,7 +66,7 @@ class TagTemplate:
 
         Always call this before mutating a tag set to catch typos early.
         """
-        if category not in cls._CATEGORIES:
+        if category not in cls._LABELS:
             raise KeyError(
-                f"Unknown category '{category}'. " f"Known categories: {', '.join(cls._CATEGORIES)}"
+                f"Unknown category '{category}'. " f"Known categories: {', '.join(cls._LABELS)}"
             )

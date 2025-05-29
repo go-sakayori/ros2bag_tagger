@@ -53,7 +53,7 @@ class McapParser:
             ):
                 self._apply_rules(channel.topic, ros_msg, ds)
 
-        ds.add("velocity", ",".join(map(str, self.velocity)))
+        ds.add("velocity", *self.velocity)
         return ds
 
     def _apply_rules(self, topic: str, ros_msg, ds: DatasetTags) -> None:

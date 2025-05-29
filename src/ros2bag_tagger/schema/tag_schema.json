@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Tag categories and sub-categories",
+  "type": "object",
+  "required": [
+    "velocity",
+    "dynamic_object",
+    "ego_vehicle_movement",
+    "location",
+    "road_shape",
+    "time_of_day"
+  ],
+  "properties": {
+    "velocity": {
+      "type": "array",
+      "items": { "type": "number" },
+      "uniqueItems": false
+    },
+    "dynamic_object": {
+      "type": "object",
+      "properties": {
+        "vehicle": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "two_wheeler": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "pedestrian": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "unknown": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      },
+      "additionalProperties": false,
+      "required": ["vehicle", "two_wheeler", "pedestrian", "unknown"]
+    },
+    "ego_vehicle_movement": {
+      "type": "object",
+      "properties": {
+        "lane keep": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "left turn": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "right turn": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "lane change": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "obstacle avoidance": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "stopped": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "parked": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "pull out": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "pull over": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      },
+      "required": [
+        "lane keep",
+        "left turn",
+        "right turn",
+        "lane change",
+        "obstacle avoidance",
+        "stopped",
+        "parked",
+        "pull out",
+        "pull over"
+      ],
+      "additionalProperties": false
+    },
+    "location": { "type": "array", "items": { "type": "string" } },
+    "road_shape": { "type": "array", "items": { "type": "string" } },
+    "time_of_day": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

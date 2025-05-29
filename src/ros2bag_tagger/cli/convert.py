@@ -24,6 +24,8 @@ def convert(
     tags.time["start_time"] = start
     tags.time["end_time"] = end
 
+    tags.validate()
+
     out_path = output or bag.with_suffix(".json")
     out_path.write_text(tags.to_json_str(indent=2, ensure_ascii=False), encoding="utf-8")
     typer.echo(f"Wrote {out_path}")

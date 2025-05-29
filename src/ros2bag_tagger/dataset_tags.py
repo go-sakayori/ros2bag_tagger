@@ -45,3 +45,7 @@ class DatasetTags:
         payload = {"time": copy.deepcopy(self.time), **copy.deepcopy(self._tags)}
 
         return json.dumps(payload, **kwargs)
+
+    def validate(self) -> None:
+        """Raise ValidationError if internal tags dict breaks the schema."""
+        TagTemplate.validate_container(self._tags)

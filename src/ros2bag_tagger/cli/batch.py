@@ -16,8 +16,10 @@ def _process(path: Path) -> None:
     parser = McapParser(path)
     tags = parser.infer_tags()
     start, end = get_bag_times(path)
-    tags.time["start_time"] = start
-    tags.time["end_time"] = end
+    tags.add("time", *[start, end])
+
+    tags.validate()
+
     tag_file.write_text(tags.to_json_str(indent=2, ensure_ascii=False), encoding="utf-8")
     typer.echo(f"  • {path.name} → {tag_file.name}")
 

@@ -21,8 +21,7 @@ def convert(
     tags = parser.infer_tags()
 
     start, end = get_bag_times(bag)
-    tags.time["start_time"] = start
-    tags.time["end_time"] = end
+    tags.add("time", *[start, end])
 
     tags.validate()
 

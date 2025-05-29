@@ -11,6 +11,11 @@
     "time_of_day"
   ],
   "properties": {
+    "time": {
+      "type": "array",
+      "items": { "type": "number" },
+      "uniqueItems": true
+    },
     "velocity": {
       "type": "array",
       "items": { "type": "number" },

@@ -8,11 +8,6 @@ class DatasetTags:
         self._tags: dict[str, list[str]] = TagTemplate.empty()
         self.time: dict[str, object] = {}
 
-    def set(self, category: str, values: Iterable[str]) -> "DatasetTags":
-        TagTemplate.validate(category)
-        self._tags[category] = list(values)
-        return self
-
     def add(self, category: str, *values: str) -> "DatasetTags":
         TagTemplate.validate(category)
         current = set(self._tags[category])

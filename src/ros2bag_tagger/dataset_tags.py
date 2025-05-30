@@ -19,17 +19,6 @@ class DatasetTags:
         current.update(values)
         self._tags["dynamic_object"][group] = sorted(current)
 
-    def remove(self, category: str, *values: str) -> "DatasetTags":
-        TagTemplate.validate(category)
-        current = set(self._tags[category])
-        current.difference_update(values)
-        self._tags[category] = sorted(current)
-        return self
-
-    def to_dict(self) -> dict[str, list[str]]:
-        """Return a shallow copy of the internal dict."""
-        return {k: list(v) for k, v in self._tags.items()}
-
     def to_json_str(self, **kwargs) -> str:
         """Serialize tags to a JSON string."""
         import copy

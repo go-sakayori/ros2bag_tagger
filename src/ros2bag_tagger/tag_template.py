@@ -41,12 +41,27 @@ class TagTemplate:
         return tuple(items.get("enum", []))
 
     @classmethod
-    def empty(cls) -> Dict[str, Dict[str, List[str]] | List]:
-        container: Dict[str, Dict[str, List[str]] | List] = {}
-        for cat in cls.category():
-            subs = cls.subcategory(cat)
-            container[cat] = {sub: [] for sub in subs} if subs else []
-        return container
+    def _empty_for_schema(cls, schema: Dict):
+        t = schema.get("type")
+        if isinstance(t, list):
+            if "object" in t:
+                t = "object"
+            elif "array" in t:
+                t = "array"
+
+        if t == "object":
+            props = schema.get("properties", {})
+            return {k: cls._empty_for_schema(v) for k, v in props.items()}
+
+        if t == "array":
+            return []
+
+        return None
+
+    @classmethod
+    def empty(cls):
+        """Return a schema-driven, fully initialised tag container."""
+        return cls._empty_for_schema(cls._SCHEMA)
 
     @classmethod
     def _assert_category(cls, category: str) -> None:

@@ -35,9 +35,58 @@
     "ego_vehicle_movement": {
       "type": "object",
       "properties": {
-        "lane keep": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
-        "left turn": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
-        "right turn": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "lane keep": {
+          "type": "object",
+          "properties": {
+            "normal": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": { "type": "number" }
+              }
+            },
+            "preceding vehicle": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": { "type": "number" }
+                }
+              }
+            }
+          },
+          "required": ["normal", "preceding vehicle"],
+          "additionalProperties": true
+        },
+        "turn": {
+          "type": "object",
+          "properties": {
+            "left turn": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": { "type": "number" }
+              }
+            },
+            "right turn": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": { "type": "number" }
+              }
+            },
+            "U turn": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": { "type": "number" }
+              }
+            }
+          },
+          "required": ["left turn", "right turn", "U turn"],
+          "additionalProperties": true
+        },
         "lane change": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
         "obstacle avoidance": {
           "type": "array",
@@ -51,8 +100,7 @@
       },
       "required": [
         "lane keep",
-        "left turn",
-        "right turn",
+        "turn",
         "lane change",
         "obstacle avoidance",
         "stopped",

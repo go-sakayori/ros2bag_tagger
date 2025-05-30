@@ -49,10 +49,7 @@
               "type": "array",
               "items": {
                 "type": "array",
-                "items": {
-                  "type": "array",
-                  "items": { "type": "number" }
-                }
+                "items": { "type": "number" }
               }
             }
           },
@@ -160,30 +157,42 @@
               "type": "array",
               "items": {
                 "type": "array",
-                "items": { "type": "array" }
+                "items": { "type": "number" }
               }
             },
             "preceding vehicle": {
               "type": "array",
               "items": {
                 "type": "array",
-                "items": { "type": "array" }
+                "items": { "type": "number" }
               }
             },
             "stop line": {
               "type": "array",
               "items": {
                 "type": "array",
-                "items": { "type": "array" }
+                "items": { "type": "number" }
               }
             }
           },
           "required": ["traffic light", "preceding vehicle", "stop line"],
           "additionalProperties": true
         },
-        "parked": { "type": "array", "items": { "type": "number" }, "uniqueItems": true },
-        "pull out": { "type": "array", "items": { "type": "number" }, "uniqueItems": true },
-        "pull over": { "type": "array", "items": { "type": "number" }, "uniqueItems": true }
+        "parked": {
+          "type": "array",
+          "items": { "type": "array", "items": { "type": "number" } },
+          "uniqueItems": true
+        },
+        "pull out": {
+          "type": "array",
+          "items": { "type": "array", "items": { "type": "number" } },
+          "uniqueItems": true
+        },
+        "pull over": {
+          "type": "array",
+          "items": { "type": "array", "items": { "type": "number" } },
+          "uniqueItems": true
+        }
       },
       "required": [
         "lane keep",
@@ -197,9 +206,9 @@
       ],
       "additionalProperties": false
     },
-    "location": { "type": "array", "items": { "type": "string" } },
+    "location": { "type": "string" },
     "road_shape": { "type": "array", "items": { "type": "string" } },
-    "time_of_day": { "type": "array", "items": { "type": "string" } }
+    "time_of_day": { "type": "string" }
   },
   "additionalProperties": false
 }

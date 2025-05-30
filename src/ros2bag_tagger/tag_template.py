@@ -56,6 +56,9 @@ class TagTemplate:
         if t == "array":
             return []
 
+        if t == "string":
+            return ""
+
         return None
 
     @classmethod

@@ -1,5 +1,3 @@
-from typing import Iterable
-
 from .tag_template import TagTemplate
 
 

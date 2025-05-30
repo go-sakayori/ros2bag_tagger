@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import json
 from importlib.resources import files
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 
-import jsonschema
 from jsonschema.validators import validator_for
 
 
@@ -24,29 +23,30 @@ class TagTemplate:
     # ------------------------------------------------------------------ #
 
     @classmethod
-    def category(cls) -> Tuple[str, ...]:
-        """Return all categories name as an immutable tuple."""
-        return cls._LABELS
+    def _empty_for_schema(cls, schema: Dict):
+        t = schema.get("type")
+        if isinstance(t, list):
+            if "object" in t:
+                t = "object"
+            elif "array" in t:
+                t = "array"
+
+        if t == "object":
+            props = schema.get("properties", {})
+            return {k: cls._empty_for_schema(v) for k, v in props.items()}
+
+        if t == "array":
+            return []
+
+        if t == "string":
+            return ""
+
+        return None
 
     @classmethod
-    def subcategory(cls, category: str) -> Tuple[str, ...]:
-        """Return the sub-keys defined for *category* (may be empty)."""
-        cls._assert_category(category)
-        prop_schema = cls._SCHEMA["properties"][category]
-
-        if prop_schema.get("type") == "object":
-            return tuple(prop_schema.get("properties", {}).keys())
-
-        items = prop_schema.get("items", {})
-        return tuple(items.get("enum", []))
-
-    @classmethod
-    def empty(cls) -> Dict[str, Dict[str, List[str]] | List]:
-        container: Dict[str, Dict[str, List[str]] | List] = {}
-        for cat in cls.category():
-            subs = cls.subcategory(cat)
-            container[cat] = {sub: [] for sub in subs} if subs else []
-        return container
+    def empty(cls):
+        """Return a schema-driven, fully initialized tag container."""
+        return cls._empty_for_schema(cls._SCHEMA)
 
     @classmethod
     def _assert_category(cls, category: str) -> None:

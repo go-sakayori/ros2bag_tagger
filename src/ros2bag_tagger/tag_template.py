@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import json
 from importlib.resources import files
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 
-import jsonschema
 from jsonschema.validators import validator_for
 
 
@@ -22,23 +21,6 @@ class TagTemplate:
     # ------------------------------------------------------------------ #
     # Public helpers
     # ------------------------------------------------------------------ #
-
-    @classmethod
-    def category(cls) -> Tuple[str, ...]:
-        """Return all categories name as an immutable tuple."""
-        return cls._LABELS
-
-    @classmethod
-    def subcategory(cls, category: str) -> Tuple[str, ...]:
-        """Return the sub-keys defined for *category* (may be empty)."""
-        cls._assert_category(category)
-        prop_schema = cls._SCHEMA["properties"][category]
-
-        if prop_schema.get("type") == "object":
-            return tuple(prop_schema.get("properties", {}).keys())
-
-        items = prop_schema.get("items", {})
-        return tuple(items.get("enum", []))
 
     @classmethod
     def _empty_for_schema(cls, schema: Dict):
@@ -63,7 +45,7 @@ class TagTemplate:
 
     @classmethod
     def empty(cls):
-        """Return a schema-driven, fully initialised tag container."""
+        """Return a schema-driven, fully initialized tag container."""
         return cls._empty_for_schema(cls._SCHEMA)
 
     @classmethod

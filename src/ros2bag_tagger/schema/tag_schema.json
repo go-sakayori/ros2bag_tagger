@@ -204,7 +204,7 @@
         "pull out",
         "pull over"
       ],
-      "additionalProperties": false
+      "additionalProperties": true
     },
     "location": { "type": "string" },
     "road_shape": { "type": "array", "items": { "type": "string" } },

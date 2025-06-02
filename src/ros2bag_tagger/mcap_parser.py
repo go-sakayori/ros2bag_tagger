@@ -7,6 +7,7 @@ The implementation relies solely on the PyPIpackage mcap.
 from __future__ import annotations
 
 from pathlib import Path
+from sys import float_info
 
 from mcap.reader import make_reader
 from mcap_ros2.decoder import DecoderFactory
@@ -30,7 +31,7 @@ class McapParser:
         """
         self.path = Path(mcap_path).expanduser().resolve()
         self.template = template
-        self.velocity = [None, None]
+        self.velocity = [float_info.max, float_info.min]
         if not self.path.exists():
             raise McapTaggerError(f"File not found: {self.path}")
 
@@ -101,7 +102,7 @@ class McapParser:
     def _update_velocity(ros_msg, velocity):
         current_vel = ros_msg.twist.twist.linear.x
 
-        if velocity[0] is None or current_vel < velocity[0]:
+        if current_vel < velocity[0]:
             velocity[0] = current_vel
-        if velocity[1] is None or current_vel > velocity[1]:
+        if current_vel > velocity[1]:
             velocity[1] = current_vel

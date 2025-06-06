@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 from typing import Any, List
 
@@ -57,12 +58,19 @@ def init_template(
 
 @app.command("validate")
 def validate_file(
-    file: Path = typer.Argument(..., exists=True, readable=True, dir_okay=False),
+    src: Path = typer.Argument(..., exists=True, readable=True, dir_okay=False),
 ) -> None:
     """Validate an edited tag-specification JSON."""
-    data = _load_json(file)
-    _check_schema(data)
-    _check_semantics(data)
-    typer.secho("specification valid", fg=typer.colors.GREEN)
 
-    typer.secho("Template looks good!", fg=typer.colors.GREEN)
+    targets = []
+    if os.path.isdir(src):
+        targets = list(src.glob("*.json"))
+    else:
+        targets = src
+
+    for file in targets:
+        data = _load_json(file)
+        _check_schema(data)
+        _check_semantics(data)
+
+    typer.secho("specification valid", fg=typer.colors.GREEN)

@@ -19,11 +19,13 @@ def _load_json(path: Path) -> Any:
         raise typer.Exit(1)
 
 
-def _check_schema(data: Any) -> None:
+def _check_schema(path: Path, data: Any) -> None:
     try:
         TagTemplate.validate_container(data)
     except ValidationError as e:
-        typer.secho(f"Schema violation: {e.message}", fg=typer.colors.RED)
+        typer.secho(
+            f"Schema violation\n File: {str(path)}\n Reason: {e.message}", fg=typer.colors.RED
+        )
         raise typer.Exit(1)
 
 
@@ -58,7 +60,7 @@ def init_template(
 
 @app.command("validate")
 def validate_file(
-    src: Path = typer.Argument(..., exists=True, readable=True, dir_okay=False),
+    src: Path = typer.Argument(..., exists=True, readable=True, dir_okay=True),
 ) -> None:
     """Validate an edited tag-specification JSON."""
 
@@ -70,7 +72,7 @@ def validate_file(
 
     for file in targets:
         data = _load_json(file)
-        _check_schema(data)
+        _check_schema(file, data)
         _check_semantics(data)
 
     typer.secho("specification valid", fg=typer.colors.GREEN)

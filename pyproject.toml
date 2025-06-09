@@ -16,6 +16,7 @@ dependencies = [
     "rich>=13.7",
     "mcap>=1.2.2",
     "mcap-ros2-support>=0.5.5",
+    "jsonschema>=4.0.0",
 ]
 [project.urls]
 Homepage = "https://github.com/go-sakayori/ros2bag_tagger"

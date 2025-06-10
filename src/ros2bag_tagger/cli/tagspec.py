@@ -128,11 +128,11 @@ def _validate_ego_vehicle_movement(data: Dict[str, Any]) -> List[str]:
                                 )
                             else:
                                 validation_errors.append(
-                                    f"Item at path '{current_path}[{i}][{j}]' was expected to be a TimeRange (a list) but found type {type(tr_candidate).__name__}."
+                                    f"Item at path '{current_path}[{i}][{j}]' was expected to be a TimeRange but found type {type(tr_candidate).__name__}."
                                 )
                     else:
                         validation_errors.append(
-                            f"Item at path '{current_path}[{i}]' was expected to be a TimeRangeArray (a list of lists) but found type {type(tra_candidate).__name__}."
+                            f"Item at path '{current_path}[{i}]' was expected to be a TimeRangeArray but found type {type(tra_candidate).__name__}."
                         )
                 pass
 

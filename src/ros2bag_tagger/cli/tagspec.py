@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-from typing import Any, List, Dict
+from typing import Any, Dict, List
 
 import typer
 from jsonschema import ValidationError
@@ -53,22 +53,26 @@ def _validate_ego_vehicle_movement(data: Dict[str, Any]) -> List[str]:
     def _check_array_properties(current_array: List[Any], path: str, errors: List[str]) -> None:
         """Checks if current_array has 2 numbers in ascending order."""
         if len(current_array) != 2:
-            errors.append(f"Array at path '{path}' must have exactly two items. Found: {len(current_array)}.")
-            return  # No further checks if length is wrong
+            errors.append(
+                f"Array at path '{path}' must have exactly two items. Found: {len(current_array)}."
+            )
+            return
 
         item1, item2 = current_array[0], current_array[1]
 
         if not all(isinstance(item, (int, float)) for item in current_array):
-            errors.append(f"Array items at path '{path}' must be numbers. Found: [{item1}, {item2}].")
-            return # Don't check order if types are wrong
+            errors.append(
+                f"Array items at path '{path}' must be numbers. Found: [{item1}, {item2}]."
+            )
+            return  # Checked in `_check_schema` but double check to avoid raise errors
 
         if item1 > item2:
-            errors.append(f"Array items at path '{path}' must be in ascending order. Found: [{item1}, {item2}].")
+            errors.append(
+                f"Array items at path '{path}' must be in ascending order. Found: [{item1}, {item2}]."
+            )
 
-    ego_movement_data = data.get('ego_vehicle_movement')
+    ego_movement_data = data.get("ego_vehicle_movement")
     if ego_movement_data is None:
-        # If 'ego_vehicle_movement' is optional, this might be a warning or info log instead of an error.
-        # For now, returning no errors if the key is missing, assuming it's not strictly mandatory.
         return validation_errors
 
     def _traverse_and_validate(current_item: Any, current_path: str) -> None:
@@ -76,59 +80,63 @@ def _validate_ego_vehicle_movement(data: Dict[str, Any]) -> List[str]:
             for key, value in current_item.items():
                 _traverse_and_validate(value, f"{current_path}.{key}")
         elif isinstance(current_item, list):
-            if not current_item: # Empty list, nothing to validate
+            if not current_item:
                 return
 
-            if not current_item: # Empty list, nothing to validate
+            if not current_item:
                 return
 
-            # Heuristic: Determine if current_item is a TimeRangeArray or a list of TimeRangeArrays
-            # A TimeRangeArray has elements that are TimeRanges (lists of numbers).
-            # A list of TimeRangeArrays has elements that are TimeRangeArrays (lists of lists of numbers).
-            # This assumes the list is homogeneous in terms of structure type once a determination is made.
-
-            first_el = current_item[0] # Get the first element to infer structure.
+            first_el = current_item[0]
 
             # Scenario 1: current_item is a TimeRangeArray (e.g., [[1,2], "string_instead_of_list", [3,4]])
             # Test: first_el is a list AND (it's empty OR its elements are numbers)
-            if isinstance(first_el, list) and \
-               (not first_el or all(isinstance(sub_el, (int, float)) for sub_el in first_el)):
+            if isinstance(first_el, list) and (
+                not first_el or all(isinstance(sub_el, (int, float)) for sub_el in first_el)
+            ):
                 # first_el is a TimeRange (or an empty list). So, current_item is treated as a TimeRangeArray.
                 # Validate each element of current_item as if it should be a TimeRange.
                 for i, item_to_check_as_tr in enumerate(current_item):
                     if isinstance(item_to_check_as_tr, list):
-                        _check_array_properties(item_to_check_as_tr, f"{current_path}[{i}]", validation_errors)
+                        _check_array_properties(
+                            item_to_check_as_tr, f"{current_path}[{i}]", validation_errors
+                        )
                     else:
                         # Item in a supposed TimeRangeArray is not a list. This is an error.
-                        validation_errors.append(f"Item at path '{current_path}[{i}]' was expected to be a TimeRange (a list) but found type {type(item_to_check_as_tr).__name__}.")
+                        validation_errors.append(
+                            f"Item at path '{current_path}[{i}]' was expected to be a TimeRange (a list) but found type {type(item_to_check_as_tr).__name__}."
+                        )
 
             # Scenario 2: current_item is a list of TimeRangeArrays (e.g., [[[1,2]], [[[3,4],[5,6]]]])
             # Test: first_el is a list AND (it's empty OR its first element is a list)
             # This indicates first_el is itself a TimeRangeArray.
-            elif isinstance(first_el, list) and \
-                 (not first_el or (first_el and isinstance(first_el[0], list))):
+            elif isinstance(first_el, list) and (
+                not first_el or (first_el and isinstance(first_el[0], list))
+            ):
                 # first_el is a TimeRangeArray. So, current_item is a list of TimeRangeArrays.
                 # Iterate through current_item; each element (tra_candidate) is a TimeRangeArray.
                 for i, tra_candidate in enumerate(current_item):
-                    if isinstance(tra_candidate, list): # tra_candidate should be a TimeRangeArray (list)
+                    if isinstance(
+                        tra_candidate, list
+                    ):  # tra_candidate should be a TimeRangeArray (list)
                         # Validate each element (tr_candidate) of tra_candidate as a TimeRange.
-                        for j, tr_candidate in enumerate(tra_candidate): # tr_candidate should be a TimeRange (list)
+                        for j, tr_candidate in enumerate(
+                            tra_candidate
+                        ):  # tr_candidate should be a TimeRange (list)
                             if isinstance(tr_candidate, list):
-                                _check_array_properties(tr_candidate, f"{current_path}[{i}][{j}]", validation_errors)
+                                _check_array_properties(
+                                    tr_candidate, f"{current_path}[{i}][{j}]", validation_errors
+                                )
                             else:
-                                validation_errors.append(f"Item at path '{current_path}[{i}][{j}]' was expected to be a TimeRange (a list) but found type {type(tr_candidate).__name__}.")
+                                validation_errors.append(
+                                    f"Item at path '{current_path}[{i}][{j}]' was expected to be a TimeRange (a list) but found type {type(tr_candidate).__name__}."
+                                )
                     else:
-                        # Item in a list of TimeRangeArrays is not a list itself.
-                        validation_errors.append(f"Item at path '{current_path}[{i}]' was expected to be a TimeRangeArray (a list of lists) but found type {type(tra_candidate).__name__}.")
-            # else:
-                # current_item is a list, but its structure doesn't match a TimeRangeArray or a list of TimeRangeArrays
-                # based on the heuristic applied to its first element.
-                # Examples: ["a", "b"], or [{"key":"val"}], or a truly mixed list like [[1,2], {"a":1}]
-                # This specific validation function will ignore it for deeper checks.
-                # Schema validation should ideally catch such structural inconsistencies.
-                pass # Explicitly do nothing for other list types.
+                        validation_errors.append(
+                            f"Item at path '{current_path}[{i}]' was expected to be a TimeRangeArray (a list of lists) but found type {type(tra_candidate).__name__}."
+                        )
+                pass
 
-    _traverse_and_validate(ego_movement_data, 'ego_vehicle_movement')
+    _traverse_and_validate(ego_movement_data, "ego_vehicle_movement")
     return validation_errors
 
 

@@ -163,7 +163,7 @@ def validate_file(
     if os.path.isdir(src):
         targets = list(src.glob("*.json"))
     else:
-        targets = src
+        targets = [src]
 
     for file in targets:
         data = _load_json(file)

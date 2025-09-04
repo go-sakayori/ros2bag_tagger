@@ -131,7 +131,6 @@ def _validate_ego_vehicle_movement(data: Dict[str, Any]) -> List[str]:
                         validation_errors.append(
                             f"Item at path '{current_path}[{i}]' was expected to be a TimeRangeArray but found type {type(tra_candidate).__name__}."
                         )
-                pass
 
     _traverse_and_validate(ego_movement_data, "ego_vehicle_movement")
     return validation_errors

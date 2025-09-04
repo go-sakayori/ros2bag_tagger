@@ -13,6 +13,12 @@ app = typer.Typer(
 
 def _process(path: Path) -> None:
     tag_file = path.with_suffix(".json")
+
+    # Skip if JSON file already exists
+    if tag_file.exists():
+        typer.echo(f"  • {path.name} → {tag_file.name} [SKIPPED: already exists]")
+        return
+
     parser = McapParser(path)
     tags = parser.infer_tags()
     start, end = get_bag_times(path)

@@ -83,9 +83,6 @@ def _validate_ego_vehicle_movement(data: Dict[str, Any]) -> List[str]:
             if not current_item:
                 return
 
-            if not current_item:
-                return
-
             first_el = current_item[0]
 
             # Scenario 1: current_item is a TimeRangeArray (e.g., [[1,2], "string_instead_of_list", [3,4]])
